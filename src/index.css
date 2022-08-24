@@ -26,12 +26,13 @@ h1{
   width:100%;
   height: 100vh;
   position: relative;
-  background-color: rgba(0, 0, 0, 0.4);
+  
+  
   color:#ffff
 }
 .App:before{
   content:'';
- background-image: linear-gradient(rgb(5, 108, 243), rgb(219, 231, 248));
+ background-image: linear-gradient(rgb(5, 48, 103), rgb(124, 139, 160));
   position:absolute;
   width:100%;
   height:100%;
