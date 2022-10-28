@@ -1,26 +1,36 @@
 import axios from "axios";
 import { useState } from "react";
-
+import Widget from "./components/widget";
 
 function App() {
-  const [data,setData]=useState({})
+  const [data,setData]=useState([{}])
   const [location,setLocation]=useState('')
   const url= `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=1f35643112b0237f679250d783dd2abf&units=imperial`
-  const value = data.weather
-  const imgurl = `https://openweathermap.org/img/wn/${data.weather ? data.weather[0].icon:null}@2x.png`
- 
+  
+  const imgurl = `https://openweathermap.org/img/wn/${data[0].weather ? data[0].weather[0].icon:null}@2x.png`
+  const urls = [`https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=1f35643112b0237f679250d783dd2abf&units=imperial`, `https://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=1f35643112b0237f679250d783dd2abf&units=imperial`]; // first url is the current weather api and second is forecast api
   const searchLocation=(event)=>{
     if(event.key==='Enter'){
-    axios.get(url).then((response)=>{
-      setData(response.data)
-      console.log(response.data)
+
+      const promises=urls.map(url=>axios.get(url));
+    
+    Promise.all(promises)
+    .then((response)=>{
+      let data = [];
+      response.forEach(response => {
+        data = data.concat(response.data);
+    });
+
+       setData(data);
+      
+      console.log(data)
     })
     setLocation('')
   }
 }
   return (
     <div className="App">
-
+        
       <div className="search">
       <input
       value={location}
@@ -34,33 +44,35 @@ function App() {
       
       <div className="top">
          <div className="Location">
-            <p>{data.name}</p>
+            <p>{data[0].name}</p>
           </div>
           <div className="temp">
-            {data.main?<h1>{data.main.temp.toFixed()}°F</h1>:null}
+            {data[0].main?<h1>{data[0].main.temp.toFixed()}°F</h1>:null}
           </div>
           <div className="description">
-          {data.weather ?<p>{data.weather[0].main}</p>:null}
+          {data[0].weather ?<p>{data[0].weather[0].main}</p>:null}
           </div>
           <div className="Icon">
-          {data.weather?<img src={imgurl}  width="120" height="100"></img>:null}
+          {data[0].weather?<img src={imgurl}  width="120" height="100"></img>:null}
           
           </div>
       </div>
        
-       {data.name!=undefined&&
+       {data[0].name!==undefined&&
+
        <div className="bottom">
+           
            <div className="feels">
-           {data.main ?<p>{data.main.feels_like.toFixed()}°F</p>:null}
+           {data[0].main ?<p>{data[0].main.feels_like.toFixed()}°F</p>:null}
             
             <p>Feels Like</p>
           </div>
           <div className="humidity">
-            {data.main ?<p>{data.main.humidity.toFixed()}%</p>:null}
+            {data[0].main ?<p>{data[0].main.humidity.toFixed()}%</p>:null}
             <p>humidity</p>
           </div>
           <div className="wind">
-          {data.wind ?<p>{data.wind.speed.toFixed()} MPH</p>:null}
+          {data[0].wind ?<p>{data[0].wind.speed.toFixed()} MPH</p>:null}
             <p>Wind Speed</p>
           </div>
        </div>
